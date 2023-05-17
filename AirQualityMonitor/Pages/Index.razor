@@ -1,7 +1,78 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using AirQualityMonitor.Data
+@inject AirQualityService airQualityService
 
-Welcome to your new app.
+<h1>Air Quality Monitor</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<p>Real-Time Air Quality Monitoring for the Community</p>
+
+@if (airQualityCollection?.Documents == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Date Time</th>
+				<th>Temp (°C)</th>
+				<th>Temp (°F)</th>
+				<th>Summary</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (AirQualityDocument airQualityDocument in airQualityCollection.Documents)
+			{
+				<tr>
+					<td>@airQualityDocument?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm tt")</td>
+					<td>@airQualityDocument?.Fields?.Temperature?.Celsius</td>
+					<td>@airQualityDocument?.Fields?.Temperature?.Fahrenheit</td>
+					<td>@airQualityDocument?.Fields?.Temperature?.Summary</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private AirQualityCollection airQualityCollection;
+	private int collectionSize = 10;
+	private Timer timer;
+
+	protected override async Task OnInitializedAsync()
+	{
+		StartAirQualityDataListener(1, TimeSpan.FromMinutes(1));
+		airQualityCollection = await airQualityService.GetAirQualityDataAsync(collectionSize);
+	}
+
+	public void StartAirQualityDataListener(int pageSize, TimeSpan dueTime)
+	{
+		timer = new Timer(GetAirQualityDataSlidingWindow, pageSize, dueTime, TimeSpan.FromMinutes(1));
+	}
+
+	public void StopAirQualityDataListener()
+	{
+		timer?.Dispose();
+	}
+
+	private async void GetAirQualityDataSlidingWindow(object state)
+	{
+		int pageSize = (int)state;
+		AirQualityCollection airQualityCollectionNew = await airQualityService.GetAirQualityDataAsync(pageSize);
+
+		if (airQualityCollectionNew?.Documents?.Count > 0)
+		{
+			airQualityCollection.Documents.InsertRange(0, airQualityCollectionNew?.Documents);
+
+			int pruneCount = airQualityCollection.Documents.Count - collectionSize;
+			if (pruneCount > 0)
+			{
+				airQualityCollection.Documents.RemoveRange(collectionSize, pruneCount);
+			}
+
+			await InvokeAsync(StateHasChanged);
+		}
+	}
+}
