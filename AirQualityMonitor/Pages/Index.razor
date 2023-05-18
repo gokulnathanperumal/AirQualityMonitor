@@ -17,8 +17,8 @@ else
 		<thead>
 			<tr>
 				<th>Date Time</th>
-				<th>Temp (°C)</th>
-				<th>Temp (°F)</th>
+				<th>Temp°C</th>
+				<th>Temp°F</th>
 				<th>Summary</th>
 			</tr>
 		</thead>
@@ -38,7 +38,7 @@ else
 
 @code {
 	private AirQualityCollection airQualityCollection;
-	private int collectionSize = 10;
+	private int collectionSize = 15;
 	private Timer timer;
 
 	protected override async Task OnInitializedAsync()
