@@ -6,7 +6,7 @@ public class AirQualityService
 {
     public async Task<Identity> SignIn()
     {
-        Identity identity = null;
+        Identity identity = new Identity();
 
         try
         {
@@ -24,7 +24,7 @@ public class AirQualityService
 
     public async Task<AirQualityCollection> GetAirQualityDataAsync(int pageSize)
     {
-        AirQualityCollection airQualityCollection = null;
+        AirQualityCollection airQualityCollection = new AirQualityCollection { Documents = new List<AirQualityDocument>() };
 
         try
         {

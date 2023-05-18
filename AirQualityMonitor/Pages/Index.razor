@@ -7,7 +7,7 @@
 
 <p>Real-Time Air Quality Monitoring for the Community</p>
 
-@if (airQualityCollection?.Documents == null)
+@if (airQualityCollection?.Documents?.Count > 0)
 {
 	<p><em>Loading...</em></p>
 }
