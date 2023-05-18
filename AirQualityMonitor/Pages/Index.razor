@@ -65,6 +65,7 @@ else
 		if (airQualityCollectionNew?.Documents?.Count > 0)
 		{
 			airQualityCollection.Documents.InsertRange(0, airQualityCollectionNew?.Documents);
+			airQualityCollection.Documents = airQualityCollection.Documents.Distinct().ToList();
 
 			int pruneCount = airQualityCollection.Documents.Count - collectionSize;
 			if (pruneCount > 0)
