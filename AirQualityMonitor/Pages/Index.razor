@@ -7,7 +7,7 @@
 
 <p>Real-Time Air Quality Monitoring for the Community</p>
 
-@if (airQualityCollection?.Documents?.Count > 0)
+@if (airQualityCollection?.Documents == null || airQualityCollection?.Documents?.Count == 0)
 {
 	<p><em>Loading...</em></p>
 }
@@ -23,7 +23,7 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (AirQualityDocument airQualityDocument in airQualityCollection.Documents)
+			@foreach (AirQualityDocument airQualityDocument in airQualityCollection?.Documents)
 			{
 				<tr>
 					<td>@airQualityDocument?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm tt")</td>
@@ -39,35 +39,26 @@ else
 @code {
 	private AirQualityCollection airQualityCollection;
 	private int collectionSize = 15;
-	private Timer timer;
+	private int newDocumentsSize = 1;
+	private Timer timerAirQualityData;
 
 	protected override async Task OnInitializedAsync()
 	{
-		StartAirQualityDataListener(1, TimeSpan.FromMinutes(1));
 		airQualityCollection = await airQualityService.GetAirQualityDataAsync(collectionSize);
+		timerAirQualityData = new Timer(GetAirQualityData, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
 	}
 
-	public void StartAirQualityDataListener(int pageSize, TimeSpan dueTime)
+	private async void GetAirQualityData(object state)
 	{
-		timer = new Timer(GetAirQualityDataSlidingWindow, pageSize, dueTime, TimeSpan.FromMinutes(1));
-	}
-
-	public void StopAirQualityDataListener()
-	{
-		timer?.Dispose();
-	}
-
-	private async void GetAirQualityDataSlidingWindow(object state)
-	{
-		int pageSize = (int)state;
-		AirQualityCollection airQualityCollectionNew = await airQualityService.GetAirQualityDataAsync(pageSize);
+		AirQualityCollection airQualityCollectionNew = await airQualityService.GetAirQualityDataAsync(newDocumentsSize);
 
 		if (airQualityCollectionNew?.Documents?.Count > 0)
 		{
 			airQualityCollection.Documents.InsertRange(0, airQualityCollectionNew?.Documents);
-			airQualityCollection.Documents = airQualityCollection.Documents.Distinct().ToList();
+			airQualityCollection.Documents = airQualityCollection.Documents.DistinctBy(x => x.DocumentId).ToList();
 
 			int pruneCount = airQualityCollection.Documents.Count - collectionSize;
+
 			if (pruneCount > 0)
 			{
 				airQualityCollection.Documents.RemoveRange(collectionSize, pruneCount);
