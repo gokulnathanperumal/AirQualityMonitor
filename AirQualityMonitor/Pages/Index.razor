@@ -38,23 +38,25 @@ else
 
 @code {
 	private AirQualityCollection airQualityCollection;
+	private Timer timerAirQualityData;
 	private int collectionSize = 15;
 	private int newDocumentsSize = 1;
-	private Timer timerAirQualityData;
+	private int missedDocuments = 0;
 
-	protected override async Task OnInitializedAsync()
+	protected override void OnInitialized()
 	{
-		airQualityCollection = await airQualityService.GetAirQualityDataAsync(collectionSize);
+		airQualityCollection = new AirQualityCollection { Documents = new List<AirQualityDocument>() };
 		timerAirQualityData = new Timer(GetAirQualityData, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
 	}
 
 	private async void GetAirQualityData(object state)
 	{
-		AirQualityCollection airQualityCollectionNew = await airQualityService.GetAirQualityDataAsync(newDocumentsSize);
+		int pageSize = airQualityCollection?.Documents?.Count > 0 ? newDocumentsSize + missedDocuments : collectionSize;
+		AirQualityCollection newAirQualityCollection = await airQualityService.GetAirQualityDataAsync(pageSize);
 
-		if (airQualityCollectionNew?.Documents?.Count > 0)
+		if (newAirQualityCollection?.Documents?.Count > 0)
 		{
-			airQualityCollection.Documents.InsertRange(0, airQualityCollectionNew?.Documents);
+			airQualityCollection.Documents.InsertRange(0, newAirQualityCollection?.Documents);
 			airQualityCollection.Documents = airQualityCollection.Documents.DistinctBy(x => x.DocumentId).ToList();
 
 			int pruneCount = airQualityCollection.Documents.Count - collectionSize;
@@ -64,7 +66,14 @@ else
 				airQualityCollection.Documents.RemoveRange(collectionSize, pruneCount);
 			}
 
+			missedDocuments = 0;
+
 			await InvokeAsync(StateHasChanged);
+		}
+		else
+		{
+			missedDocuments += newDocumentsSize;
+			missedDocuments = (newDocumentsSize + missedDocuments) > collectionSize ? (collectionSize - newDocumentsSize) : missedDocuments;
 		}
 	}
 }
