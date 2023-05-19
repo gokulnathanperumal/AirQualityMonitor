@@ -23,13 +23,13 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (AirQualityDocument airQualityDocument in airQualityCollection?.Documents)
+			@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
 			{
-				<tr>
-					<td>@airQualityDocument?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm tt")</td>
-					<td>@airQualityDocument?.Fields?.Temperature?.Celsius</td>
-					<td>@airQualityDocument?.Fields?.Temperature?.Fahrenheit</td>
-					<td>@airQualityDocument?.Fields?.Temperature?.Summary</td>
+				<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+					<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm tt")</td>
+					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Celsius</td>
+					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Fahrenheit</td>
+					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Summary</td>
 				</tr>
 			}
 		</tbody>
@@ -42,6 +42,8 @@ else
 	private int collectionSize = 15;
 	private int newDocumentsSize = 1;
 	private int missedDocuments = 0;
+	private int receivedNewDocuments = 0;
+	private string newRecordAnimation = "new-record-animation";
 
 	protected override void OnInitialized()
 	{
@@ -51,6 +53,8 @@ else
 
 	private async void GetAirQualityData(object state)
 	{
+		int lastCollectionSize = airQualityCollection.Documents.Count;
+
 		int pageSize = airQualityCollection?.Documents?.Count > 0 ? newDocumentsSize + missedDocuments : collectionSize;
 		AirQualityCollection newAirQualityCollection = await airQualityService.GetAirQualityDataAsync(pageSize);
 
@@ -67,7 +71,13 @@ else
 			}
 
 			missedDocuments = 0;
+			receivedNewDocuments = (airQualityCollection.Documents.Count + pruneCount) - lastCollectionSize;
 
+			//Css will be applied only when the element is created and reapplied only when a property gets changed.
+			//So removing the animation class and adding it back to replay the animation for the existing elements.
+			newRecordAnimation = "";
+			await InvokeAsync(StateHasChanged);
+			newRecordAnimation = "new-record-animation";
 			await InvokeAsync(StateHasChanged);
 		}
 		else

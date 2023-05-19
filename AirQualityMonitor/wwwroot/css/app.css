@@ -82,3 +82,27 @@ a, .btn-link {
 		padding-left: env(safe-area-inset-left);
 	}
 }
+
+/* Blink Animation for New Records */
+@-webkit-keyframes new-record-keyframes {
+    from { background-color: green; }
+    to { background-color: inherit; }
+}
+@-moz-keyframes new-record-keyframes {
+    from { background-color: green; }
+    to { background-color: inherit; }
+}
+@-o-keyframes new-record-keyframes {
+    from { background-color: green; }
+    to { background-color: inherit; }
+}
+@keyframes new-record-keyframes {
+    from { background-color: green; }
+    to { background-color: inherit; }
+}
+.new-record-animation {
+    -webkit-animation: new-record-keyframes 1s 1; /* Safari 4+ */
+    -moz-animation: new-record-keyframes 1s 1; /* Fx 5+ */
+    -o-animation: new-record-keyframes 1s 1; /* Opera 12+ */
+    animation: new-record-keyframes 1s 1; /* IE 10+ */
+}
