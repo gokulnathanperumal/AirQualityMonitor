@@ -38,7 +38,7 @@ public class Temperature
     public double DoubleValue { get; set; }
     public string Celsius => DoubleValue.ToString("0.00°C");
     public string Fahrenheit => (32 + (DoubleValue / 0.5556)).ToString("0.00°F");
-    public string Summary => new Dictionary<int, string>() { { 1, "Freezing" }, { 2, "Bracing" }, { 3, "Chilly" }, { 5, "Mild" }, { 6, "Warm" }, { 7, "Balmy" }, { 8, "Hot" }, { 9, "Sweltering" }, { 10, "Scorching" } }[(DoubleValue < 5) ? 1 : (DoubleValue > 50) ? 10 : (int)(DoubleValue / 5)];
+    public string Summary => new Dictionary<int, string>() { { 1, "Freezing" }, { 2, "Bracing" }, { 3, "Chilly" }, { 4, "Cool" }, { 5, "Mild" }, { 6, "Warm" }, { 7, "Balmy" }, { 8, "Hot" }, { 9, "Sweltering" }, { 10, "Scorching" } }[(DoubleValue < 5) ? 1 : (DoubleValue > 50) ? 10 : (int)(DoubleValue / 5)];
 }
 
 public class CreatedDate
