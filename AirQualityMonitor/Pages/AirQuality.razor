@@ -1,0 +1,345 @@
+﻿@page "/"
+
+@using AirQualityMonitor.Data
+@inject AirQualityService airQualityService
+
+<style>
+	.slidecontainer {
+		width: 100%;
+	}
+
+	.slider {
+		-webkit-appearance: none;
+		width: 100%;
+		height: 10px;
+		border-radius: 5px;
+		outline: none;
+		opacity: 0.7;
+		-webkit-transition: .2s;
+		transition: opacity .2s;
+	}
+
+	.slider_bg_pm2p5 {
+		background: linear-gradient( to right, rgb(0, 176, 80) 0% 8.33%, rgb(146, 208, 80) 8.33% 16.66%, rgb(255,215,0) 16.66% 25%, rgb(255, 153, 0) 25% 33.36%, rgb(255, 0, 0) 33.36% 69.44%, rgb(192, 0, 0) 69.44% 100%);
+	}
+
+	.slider_bg_pm10 {
+		background: linear-gradient( to right, rgb(0, 176, 80) 0% 8.33%, rgb(146, 208, 80) 8.33% 16.66%, rgb(255,215,0) 16.66% 41.66%, rgb(255, 153, 0) 41.66% 58.33%, rgb(255, 0, 0) 58.33% 71.66%, rgb(192, 0, 0) 71.66% 100%);
+	}
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 5px;
+        height: 25px;
+        border-radius: 0%;
+        background: black;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 5px;
+        height: 25px;
+		border-radius: 0%;
+		background: black;
+        cursor: pointer;
+    }
+
+	.flex-container {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		align-items: center;
+		row-gap: 10px;
+		column-gap: 20px;
+	}
+
+	.label {
+		border-radius: 25px;
+		padding: 0.5em 1em;
+		color: black;
+		font-size: 1em;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+	}
+
+	.good {
+		color: rgb(0, 176, 80);
+	}
+	.satisfactory {
+		color: rgb(146, 208, 80);
+	}
+	.moderate {
+		color: rgb(255,215,0);
+	}
+	.poor {
+		color: rgb(255, 153, 0);
+	}
+	.verypoor {
+		color: rgb(255, 0, 0);
+	}
+	.severe {
+		color: rgb(192, 0, 0);
+	}
+
+	.good_bg {
+		background-color: rgb(0, 176, 80);
+		color: white;
+	}
+	.satisfactory_bg {
+		background-color: rgb(146, 208, 80);
+		color: white;
+	}
+	.moderate_bg {
+		background-color: rgb(255,215,0);
+		color: white;
+	}
+	.poor_bg {
+		background-color: rgb(255, 153, 0);
+		color: white;
+	}
+	.verypoor_bg {
+		background-color: rgb(255, 0, 0);
+		color: white;
+	}
+	.severe_bg {
+		background-color: rgb(192, 0, 0);
+		color: white;
+	}
+
+	.card {
+		padding: 16px 16px;
+		border-radius: 15px;
+		box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+		transition: 0.3s;
+	}
+
+	.card:hover {
+		box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	td, th {
+		border: 1px solid #dddddd;
+		text-align: left;
+		padding: 8px;
+	}
+</style>
+
+<div style="display: flex; justify-content:center;">
+	<div style="max-width: 50em; padding: 1em">
+		<div>
+			<div style="font-size:.7em; text-align:right; font-style:italic;">Last updated on @createdDate</div>
+			<div style="font-size:2em; text-align:center;">Mettur AirQ Companion</div>
+			<div style="font-size:1em; text-align:center;">Real-Time Air Pollution Monitor for <a style="text-decoration: none;" href="https://www.google.com/maps/place/Mettur" target="_blank">Mettur, India</a></div>
+		</div>
+		<br/>	
+		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+			<div class="flex-container">
+				<span style="width: 30%; text-align:center">
+					<span style="font-size:1em; white-space: nowrap;" class="label other">PM 2.5</span>
+				</span>
+				<span style="width: 40%; text-align:center">
+					<span style="font-size:2em; white-space: nowrap;" class="@particulateMatter2p5_color">@particulateMatter2p5.ToString("0.00") <span style="font-size:.5em;"> μg/m3</span></span>
+				</span>
+				<span style="width: 30%; text-align:center">
+					<span style="font-size:1em; white-space: nowrap;" class="label @particulateMatter2p5_bgcolor">@particulateMatter2p5_category</span>
+				</span>
+			</div>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="360" value="@particulateMatter2p5" class="slider slider_bg_pm2p5" id="myRange">
+			</div>
+		</div>
+		<br/>
+		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+			<div class="flex-container">
+				<span style="width: 30%; text-align:center">
+					<span style="font-size:1em; white-space: nowrap;" class="label other">PM 10</span>
+				</span>
+				<span style="width: 40%; text-align:center">
+					<span style="font-size:2em; white-space: nowrap;" class="@particulateMatter10_color">@particulateMatter10.ToString("0.00") <span style="font-size:.5em;"> μg/m3</span></span>
+				</span>
+				<span style="width: 30%; text-align:center">
+					<span style="font-size:1em; white-space: nowrap;" class="label @particulateMatter10_bgcolor">@particulateMatter10_category</span>
+				</span>
+		  </div>
+		  <div class="slidecontainer">
+				<input type="range" min="0" max="600" value="@particulateMatter10" class="slider slider_bg_pm10" id="myRange">
+		  </div>
+		</div>
+		<br/>
+		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+			<table style="font-size:1em">
+				<thead>
+					<tr>
+						<th style="white-space: nowrap;">PM 2.5 (μg/m3)</th>
+						<th style="white-space: nowrap;">PM 10 (μg/m3)</th>
+						<th>Category</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="good">
+						<td>0 - 30</td>
+						<td>0 - 50</td>
+						<td>Good</td>
+					</tr>
+					<tr class="satisfactory">
+						<td>30 - 60</td>
+						<td>50 - 100</td>
+						<td>Satisfactory</td>
+					</tr>
+					<tr class="moderate">
+						<td>60 - 90</td>
+						<td>100 - 250</td>
+						<td>Moderate</td>
+					</tr>
+					<tr class="poor">
+						<td>90 - 120</td>
+						<td>250 - 350</td>
+						<td>Poor</td>
+					</tr>
+					<tr class="verypoor">
+						<td>120 - 250</td>
+						<td>350 - 430</td>
+						<td>Very Poor</td>
+					</tr>
+					<tr class="severe">
+						<td>250+</td>
+						<td>430+</td>
+						<td>Severe</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<br/>
+		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+			<span style="font-size:1em; font-style:italic"><b>PM 2.5 and PM 10</b> are fine and coarse particulate matter with diameters of 2.5 micrometers or smaller, and 10 micrometers or smaller, respectively.</span>
+			<br/>
+			<span style="font-size:1em; font-style:italic">These particles gets suspended in air through a variety of sources, both human-made (Thermal Power Plant Combustion, Traffic Emissions, etc) and natural (wildfires, arid climates, etc).</span>
+			<br/>
+			<span style="font-size:1em; font-weight: bold; font-style:italic">Health Risks:</span>
+			<br/>
+			<span style="font-size:1em; font-style:italic">PM 2.5: These ultra-fine particles can deeply penetrate the lungs and even enter the bloodstream, causing respiratory issues, aggravating asthma, and increasing the risk of heart diseases.</span>
+			<br/>
+			<span style="font-size:1em; font-style:italic">PM 10: Larger particles can cause irritation of the eyes, nose, and throat, and exacerbate respiratory problems, especially in sensitive individuals.</span>
+		</div>
+		<br/>
+		<div style="color: rgb(255, 255, 255);">
+			<div style="font-size:1em; font-style:italic; text-align:center;">Take charge of your environment with real-time pollution monitoring right at your fingertips.</div>
+			<br/>
+			<div style="font-size:1em; font-style:italic; text-align:center;">Our app empowers you to track crucial air quality indicators like PM 2.5 and PM 10, keeping you informed about the state of the air you breathe.</div>
+			<br/>
+			<div style="font-size:1em; font-style:italic; text-align:center;">Join us in making a difference – monitor pollution levels, raise awareness, and together, let's work towards a cleaner, healthier future for our hometown.</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	private double particulateMatter2p5 = 0;
+	private string particulateMatter2p5_category = "Good";
+	private string particulateMatter2p5_color = "good";
+	private string particulateMatter2p5_bgcolor = "good_bg";
+	private double particulateMatter10 = 0;
+	private string particulateMatter10_category = "Good";
+	private string particulateMatter10_color = "good";
+	private string particulateMatter10_bgcolor = "good_bg";
+	private string createdDate = "00-00-0000 00:00:00 XX";
+	private Timer timerAirQualityData;
+
+	protected override void OnInitialized()
+	{
+		timerAirQualityData = new Timer(GetAirQualityData, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+	}
+
+	private async void GetAirQualityData(object state)
+	{
+		AirQualityCollection newAirQualityCollection = await airQualityService.GetAirQualityDataAsync(1);
+
+		if (newAirQualityCollection?.Documents?.Count > 0)
+		{
+			particulateMatter2p5 = newAirQualityCollection.Documents[0].Fields.ParticulateMatter2p5.DoubleValue;
+			particulateMatter10 = newAirQualityCollection.Documents[0].Fields.ParticulateMatter10.DoubleValue;
+			createdDate = newAirQualityCollection.Documents[0].Fields.CreatedDate.TimestampValue.ToLocalTime().ToString("dd-MM-yyyy hh:mm:ss tt");
+
+			if (particulateMatter2p5 < 30)
+			{
+				particulateMatter2p5_category = "Good";
+				particulateMatter2p5_color = "good";
+				particulateMatter2p5_bgcolor = "good_bg";
+			}
+			else if (particulateMatter2p5 < 60)
+			{
+				particulateMatter2p5_category = "Satisfactory";
+				particulateMatter2p5_color = "satisfactory";
+				particulateMatter2p5_bgcolor = "satisfactory_bg";
+			}
+			else if (particulateMatter2p5 < 90)
+			{
+				particulateMatter2p5_category = "Moderate";
+				particulateMatter2p5_color = "moderate";
+				particulateMatter2p5_bgcolor = "moderate_bg";
+			}
+			else if (particulateMatter2p5 < 120)
+			{
+				particulateMatter2p5_category = "Poor";
+				particulateMatter2p5_color = "poor";
+				particulateMatter2p5_bgcolor = "poor_bg";
+			}
+			else if (particulateMatter2p5 < 250)
+			{
+				particulateMatter2p5_category = "Very Poor";
+				particulateMatter2p5_color = "verypoor";
+				particulateMatter2p5_bgcolor = "verypoor_bg";
+			}
+			else
+			{
+				particulateMatter2p5_category = "Severe";
+				particulateMatter2p5_color = "severe";
+				particulateMatter2p5_bgcolor = "severe_bg";
+			}
+
+			if (particulateMatter10 < 50)
+			{
+				particulateMatter10_category = "Good";
+				particulateMatter10_color = "good";
+				particulateMatter10_bgcolor = "good_bg";
+			}
+			else if (particulateMatter10 < 100)
+			{
+				particulateMatter10_category = "Satisfactory";
+				particulateMatter10_color = "satisfactory";
+				particulateMatter10_bgcolor = "satisfactory_bg";
+			}
+			else if (particulateMatter10 < 250)
+			{
+				particulateMatter10_category = "Moderate";
+				particulateMatter10_color = "moderate";
+				particulateMatter10_bgcolor = "moderate_bg";
+			}
+			else if (particulateMatter10 < 350)
+			{
+				particulateMatter10_category = "Poor";
+				particulateMatter10_color = "poor";
+				particulateMatter10_bgcolor = "poor_bg";
+			}
+			else if (particulateMatter10 < 430)
+			{
+				particulateMatter10_category = "Very Poor";
+				particulateMatter10_color = "verypoor";
+				particulateMatter10_bgcolor = "verypoor_bg";
+			}
+			else
+			{
+				particulateMatter10_category = "Severe";
+				particulateMatter10_color = "severe";
+				particulateMatter10_bgcolor = "severe_bg";
+			}
+
+			await InvokeAsync(StateHasChanged);
+		}
+	}
+}
