@@ -1,40 +1,100 @@
-﻿@page "/"
+﻿@page "/rawdata"
 
 @using AirQualityMonitor.Data
 @inject AirQualityService airQualityService
 
-<h1>Air Quality Monitor</h1>
+<div style="padding: 1.5rem">
+	<h1>Mettur AirQ Companion</h1>
 
-<p>Real-Time Air Quality Monitoring for the Community</p>
+	<p>Real-Time Air Pollution Monitor for <a style="text-decoration: none;" href="https://www.google.com/maps/place/Mettur" target="_blank">Mettur, India</a></p>
 
-@if (airQualityCollection?.Documents == null || airQualityCollection?.Documents?.Count == 0)
-{
-	<p><em>Loading...</em></p>
-}
-else
-{
-	<table class="table">
-		<thead>
-			<tr>
-				<th>Date Time</th>
-				<th>Temp°C</th>
-				<th>Temp°F</th>
-				<th>Summary</th>
-			</tr>
-		</thead>
-		<tbody>
-			@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
-			{
-				<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
-					<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm tt")</td>
-					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Celsius</td>
-					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Fahrenheit</td>
-					<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Summary</td>
+	@if (airQualityCollection?.Documents == null || airQualityCollection?.Documents?.Count == 0)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>PM 1</th>
+					<th>PM 2.5</th>
 				</tr>
-			}
-		</tbody>
-	</table>
-}
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter1?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter2p5?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>PM 4</th>
+					<th>PM 10</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter4?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter10?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>Humd</th>
+					<th>Temp</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.Humidity?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>VOC</th>
+					<th>NOx</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.VolatileOrganicCompounds?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.NitrogenOxides?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+</div>
 
 @code {
 	private AirQualityCollection airQualityCollection;
@@ -53,6 +113,11 @@ else
 
 	private async void GetAirQualityData(object state)
 	{
+		//Css will be applied only when the element is created and reapplied only when a property gets changed.
+		//So removing the animation class and adding it back to replay the animation for the existing elements.
+		newRecordAnimation = "";
+		await InvokeAsync(StateHasChanged);
+
 		int lastCollectionSize = airQualityCollection.Documents.Count;
 
 		int pageSize = airQualityCollection?.Documents?.Count > 0 ? newDocumentsSize + missedDocuments : collectionSize;
@@ -73,10 +138,6 @@ else
 			missedDocuments = 0;
 			receivedNewDocuments = (airQualityCollection.Documents.Count + pruneCount) - lastCollectionSize;
 
-			//Css will be applied only when the element is created and reapplied only when a property gets changed.
-			//So removing the animation class and adding it back to replay the animation for the existing elements.
-			newRecordAnimation = "";
-			await InvokeAsync(StateHasChanged);
 			newRecordAnimation = "new-record-animation";
 			await InvokeAsync(StateHasChanged);
 		}
