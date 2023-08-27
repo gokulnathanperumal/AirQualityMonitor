@@ -2,6 +2,11 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background-image: url('./images/nature.jpg');
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 main {
@@ -9,7 +14,7 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background: rgba(0,77,64,.5);
 }
 
 .top-row {
