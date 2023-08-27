@@ -29,7 +29,7 @@ public class AirQualityService
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://firestore.googleapis.com/v1beta1/projects/air-quality-monitor-mettur/databases/(default)/documents/sensor-data?orderBy=createdDate desc&pageSize={pageSize}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://firestore.googleapis.com/v1beta1/projects/air-quality-monitor-mettur/databases/(default)/documents/sensor-data?orderBy=CreatedDate desc&pageSize={pageSize}");
             request.Headers.Add("Authorization", $"Bearer {(await SignIn())?.IdToken}");
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
