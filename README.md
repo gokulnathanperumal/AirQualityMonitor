@@ -2,7 +2,8 @@
 Real-Time Air Quality Monitoring Application for Multiplatforms (Windows, macOS, Android, iOS, Tizen, Web)
 
 ### Windows:
-<img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/de1cdd5c-9fe1-47ea-ba5c-9e5d81275d2b" width="100%">
+<img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/0fb1f36f-e5ea-4cc7-84cd-6fca4c4b759c" width="100%">
+<img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/4c82e5fa-e61a-46ab-874c-28f1d2894980" width="100%">
 
 ### Android:
 <img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/e06d1bb4-00b1-4ee2-843a-9c88c39b8e47" width="32.5%">
