@@ -1,6 +1,8 @@
 # Air Quality Monitor
 Real-Time Air Quality Monitoring Application for Multiplatforms (Windows, macOS, Android, iOS, Tizen, Web)
 
+<p>Take charge of your environment with real-time pollution monitoring right at your fingertips. Our app empowers you to track crucial air quality indicators like PM 2.5 and PM 10, keeping you informed about the state of the air you breathe. Join us in making a difference – monitor pollution levels, raise awareness, and together, let's work towards a cleaner, healthier future for our hometown.</p>
+
 ### Android:
 <img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/e06d1bb4-00b1-4ee2-843a-9c88c39b8e47" width="32.5%">
 <img src="https://github.com/gokulnathanperumal/AirQualityMonitor/assets/72061169/4fe8f5e9-b59e-453d-aae6-3f899b5d1137" width="32.5%">
