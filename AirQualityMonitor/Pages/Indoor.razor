@@ -1,0 +1,148 @@
+﻿@page "/indoor"
+
+@using AirQualityMonitor.Data
+@inject AirQualityService airQualityService
+
+<div style="padding: 1.5rem">
+	<div style="font-size:2em; text-align:left;">Indoor Air Quality</div>
+
+	@if (airQualityCollection?.Documents == null || airQualityCollection?.Documents?.Count == 0)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>PM 1.0</th>
+					<th>PM 2.5</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter1p0?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter2p5?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>PM 4.0</th>
+					<th>PM 10</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter4p0?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.ParticulateMatter10?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>Humd</th>
+					<th>Temp</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.Humidity?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.Temperature?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Date Time</th>
+					<th>VOC</th>
+					<th>NOx</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < airQualityCollection?.Documents?.Count; i++)
+				{
+					<tr class="@(i < receivedNewDocuments ? newRecordAnimation : "")">
+						<td>@airQualityCollection?.Documents[i]?.Fields?.CreatedDate?.TimestampValue.ToLocalTime().ToString("MM-dd-yyyy hh:mm:ss tt")</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.VolatileOrganicCompounds?.Value</td>
+						<td>@airQualityCollection?.Documents[i]?.Fields?.NitrogenOxides?.Value</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+</div>
+
+@code {
+	private AirQualityCollection airQualityCollection;
+	private Timer timerAirQualityData;
+	private int collectionSize = 60;
+	private int newDocumentsSize = 1;
+	private int missedDocuments = 0;
+	private int receivedNewDocuments = 0;
+	private string newRecordAnimation = "new-record-animation";
+
+	protected override void OnInitialized()
+	{
+		airQualityCollection = new AirQualityCollection { Documents = new List<AirQualityDocument>() };
+		timerAirQualityData = new Timer(GetAirQualityData, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+	}
+
+	private async void GetAirQualityData(object state)
+	{
+		//Css will be applied only when the element is created and reapplied only when a property gets changed.
+		//So removing the animation class and adding it back to replay the animation for the existing elements.
+		newRecordAnimation = "";
+		await InvokeAsync(StateHasChanged);
+
+		int lastCollectionSize = airQualityCollection.Documents.Count;
+
+		int pageSize = airQualityCollection?.Documents?.Count > 0 ? newDocumentsSize + missedDocuments : collectionSize;
+		AirQualityCollection newAirQualityCollection = await airQualityService.GetAirQualityDataAsync(pageSize, "indoor");
+
+		if (newAirQualityCollection?.Documents?.Count > 0)
+		{
+			airQualityCollection.Documents.InsertRange(0, newAirQualityCollection?.Documents);
+			airQualityCollection.Documents = airQualityCollection.Documents.DistinctBy(x => x.DocumentId).ToList();
+
+			int pruneCount = airQualityCollection.Documents.Count - collectionSize;
+
+			if (pruneCount > 0)
+			{
+				airQualityCollection.Documents.RemoveRange(collectionSize, pruneCount);
+			}
+
+			missedDocuments = 0;
+			receivedNewDocuments = (airQualityCollection.Documents.Count + pruneCount) - lastCollectionSize;
+
+			newRecordAnimation = "new-record-animation";
+			await InvokeAsync(StateHasChanged);
+		}
+		else
+		{
+			missedDocuments += newDocumentsSize;
+			missedDocuments = (newDocumentsSize + missedDocuments) > collectionSize ? (collectionSize - newDocumentsSize) : missedDocuments;
+		}
+	}
+}

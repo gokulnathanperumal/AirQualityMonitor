@@ -133,45 +133,69 @@
 <div style="display: flex; justify-content:center;">
 	<div style="max-width: 50em; padding: 1em">
 		<div>
-			<div style="font-size:.7em; text-align:right; font-style:italic;">Last updated on @createdDate</div>
 			<div style="font-size:2em; text-align:center;">Mettur AirQ Companion</div>
 			<div style="font-size:1em; text-align:center;">Real-Time Air Pollution Monitor for <a style="text-decoration: none;" href="https://www.google.com/maps/place/Mettur" target="_blank">Mettur, India</a></div>
 		</div>
-		<br/>	
-		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
-			<div class="flex-container">
-				<span style="width: 30%; text-align:center">
-					<span style="font-size:1em; white-space: nowrap;" class="label other">PM 2.5</span>
-				</span>
-				<span style="width: 40%; text-align:center">
-					<span style="font-size:2em; white-space: nowrap;" class="@particulateMatter2p5_color">@particulateMatter2p5.ToString("0.00") <span style="font-size:.5em;"> μg/m3</span></span>
-				</span>
-				<span style="width: 30%; text-align:center">
-					<span style="font-size:1em; white-space: nowrap;" class="label @particulateMatter2p5_bgcolor">@particulateMatter2p5_category</span>
-				</span>
-			</div>
-			<div class="slidecontainer">
-				<input type="range" min="0" max="360" value="@particulateMatter2p5" class="slider slider_bg_pm2p5" disabled>
-			</div>
-		</div>
 		<br/>
-		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
-			<div class="flex-container">
-				<span style="width: 30%; text-align:center">
-					<span style="font-size:1em; white-space: nowrap;" class="label other">PM 10</span>
-				</span>
-				<span style="width: 40%; text-align:center">
-					<span style="font-size:2em; white-space: nowrap;" class="@particulateMatter10_color">@particulateMatter10.ToString("0.00") <span style="font-size:.5em;"> μg/m3</span></span>
-				</span>
-				<span style="width: 30%; text-align:center">
-					<span style="font-size:1em; white-space: nowrap;" class="label @particulateMatter10_bgcolor">@particulateMatter10_category</span>
-				</span>
-		  </div>
-		  <div class="slidecontainer">
-				<input type="range" min="0" max="600" value="@particulateMatter10" class="slider slider_bg_pm10" disabled>
-		  </div>
-		</div>
-		<br/>
+
+		@for (int i = 0; i < airQualityViewsOutdoor?.Count; i++)
+		{
+			@if (i == 0)
+			{
+				<div style="font-size:1.5em; text-align:left;">Outdoor</div>
+			}
+			<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+				<div class="flex-container">
+					<span style="width: 30%; text-align:center">
+						<span style="font-size:1em; white-space: nowrap;" class="label other"><span class="oi oi-globe" aria-hidden="true"></span> @airQualityViewsOutdoor[i].Name</span>
+					</span>
+					<span style="width: 40%; text-align:center">
+						<span style="font-size:2em; white-space: nowrap;" class="@airQualityViewsOutdoor[i].Category.Color">@airQualityViewsOutdoor[i].Value.ToString("0.00") <span style="font-size:.5em;"> @airQualityViewsOutdoor[i].Unit</span></span>
+					</span>
+					<span style="width: 30%; text-align:center">
+						<span style="font-size:1em; white-space: nowrap;" class="label @airQualityViewsOutdoor[i].Category.BgColor">@airQualityViewsOutdoor[i].Category.Name</span>
+					</span>
+				</div>
+				<div class="slidecontainer">
+					<input type="range" min="@airQualityViewsOutdoor[i].Slider.Min" max="@airQualityViewsOutdoor[i].Slider.Max" value="@airQualityViewsOutdoor[i].Value" class="slider @airQualityViewsOutdoor[i].Slider.SliderBg" disabled>
+				</div>
+			</div>
+			@if (i == airQualityViewsOutdoor?.Count - 1)
+			{
+				<div style="font-size:.7em; text-align:right; font-style:italic;">Last updated on @lastUpdatedDateOutdoor</div>
+			}
+			<br />
+		}
+
+		@for (int i = 0; i < airQualityViewsIndoor?.Count; i++)
+		{
+			@if (i == 0)
+			{
+				<div style="font-size:1.5em; text-align:left;">Indoor</div>
+			}
+			<div class="card" style="background: rgba(255, 255, 255, 0.9);">
+				<div class="flex-container">
+					<span style="width: 30%; text-align:center">
+						<span style="font-size:1em; white-space: nowrap;" class="label other"><span class="oi oi-home" aria-hidden="true"></span> @airQualityViewsIndoor[i].Name</span>
+					</span>
+					<span style="width: 40%; text-align:center">
+						<span style="font-size:2em; white-space: nowrap;" class="@airQualityViewsIndoor[i].Category.Color">@airQualityViewsIndoor[i].Value.ToString("0.00") <span style="font-size:.5em;"> @airQualityViewsIndoor[i].Unit</span></span>
+					</span>
+					<span style="width: 30%; text-align:center">
+						<span style="font-size:1em; white-space: nowrap;" class="label @airQualityViewsIndoor[i].Category.BgColor">@airQualityViewsIndoor[i].Category.Name</span>
+					</span>
+				</div>
+				<div class="slidecontainer">
+					<input type="range" min="@airQualityViewsIndoor[i].Slider.Min" max="@airQualityViewsIndoor[i].Slider.Max" value="@airQualityViewsIndoor[i].Value" class="slider @airQualityViewsIndoor[i].Slider.SliderBg" disabled>
+				</div>
+			</div>
+			@if (i == airQualityViewsIndoor?.Count - 1)
+			{
+				<div style="font-size:.7em; text-align:right; font-style:italic;">Last updated on @lastUpdatedDateIndoor</div>
+			}
+			<br />
+		}
+
 		<div class="card" style="background: rgba(255, 255, 255, 0.9);">
 			<table style="font-size:1em">
 				<thead>
@@ -239,107 +263,146 @@
 </div>
 
 @code {
-	private double particulateMatter2p5 = 0;
-	private string particulateMatter2p5_category = "Good";
-	private string particulateMatter2p5_color = "good";
-	private string particulateMatter2p5_bgcolor = "good_bg";
-	private double particulateMatter10 = 0;
-	private string particulateMatter10_category = "Good";
-	private string particulateMatter10_color = "good";
-	private string particulateMatter10_bgcolor = "good_bg";
-	private string createdDate = "00-00-0000 00:00:00 XX";
-	private Timer timerAirQualityData;
+	private Timer timerAirQualityDataOutdoor;
+	private string lastUpdatedDateOutdoor = "00-00-0000 00:00:00 AM";
+	private List<AirQualityView> airQualityViewsOutdoor = new List<AirQualityView>();
+
+	private Timer timerAirQualityDataIndoor;
+	private string lastUpdatedDateIndoor = "00-00-0000 00:00:00 AM";
+	private List<AirQualityView> airQualityViewsIndoor = new List<AirQualityView>();
+
+	#region enum and struct
+	public enum PMType
+	{
+		PM1p0,
+		PM2p5,
+		PM10
+	}
+
+	public struct AirQualityView
+	{
+		public string Name;
+		public double Value;
+		public string Unit;
+		public Category Category;
+		public Slider Slider;
+	}
+
+	public struct Category
+	{
+		public string Name;
+		public string Color;
+		public string BgColor;
+	}
+
+	public struct Slider
+	{
+		public int Min;
+		public int Max;
+		public string SliderBg;
+	}
+	#endregion
 
 	protected override void OnInitialized()
 	{
-		timerAirQualityData = new Timer(GetAirQualityData, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+		timerAirQualityDataOutdoor = new Timer(GetAirQualityData, "outdoor", TimeSpan.Zero, TimeSpan.FromMinutes(1));
+		timerAirQualityDataIndoor = new Timer(GetAirQualityData, "indoor", TimeSpan.Zero, TimeSpan.FromMinutes(1));
 	}
 
 	private async void GetAirQualityData(object state)
 	{
-		AirQualityCollection newAirQualityCollection = await airQualityService.GetAirQualityDataAsync(1);
-
-		if (newAirQualityCollection?.Documents?.Count > 0)
+		if (state.ToString() == "outdoor")
 		{
-			particulateMatter2p5 = newAirQualityCollection.Documents[0].Fields.ParticulateMatter2p5.DoubleValue;
-			particulateMatter10 = newAirQualityCollection.Documents[0].Fields.ParticulateMatter10.DoubleValue;
-			createdDate = newAirQualityCollection.Documents[0].Fields.CreatedDate.TimestampValue.ToLocalTime().ToString("dd-MM-yyyy hh:mm:ss tt");
+			AirQualityCollection newAirQualityCollectionOutdoor = await airQualityService.GetAirQualityDataAsync(1, "outdoor");
 
-			if (particulateMatter2p5 < 30)
+			if (newAirQualityCollectionOutdoor?.Documents?.Count > 0)
 			{
-				particulateMatter2p5_category = "Good";
-				particulateMatter2p5_color = "good";
-				particulateMatter2p5_bgcolor = "good_bg";
-			}
-			else if (particulateMatter2p5 < 60)
-			{
-				particulateMatter2p5_category = "Satisfactory";
-				particulateMatter2p5_color = "satisfactory";
-				particulateMatter2p5_bgcolor = "satisfactory_bg";
-			}
-			else if (particulateMatter2p5 < 90)
-			{
-				particulateMatter2p5_category = "Moderate";
-				particulateMatter2p5_color = "moderate";
-				particulateMatter2p5_bgcolor = "moderate_bg";
-			}
-			else if (particulateMatter2p5 < 120)
-			{
-				particulateMatter2p5_category = "Poor";
-				particulateMatter2p5_color = "poor";
-				particulateMatter2p5_bgcolor = "poor_bg";
-			}
-			else if (particulateMatter2p5 < 250)
-			{
-				particulateMatter2p5_category = "Very Poor";
-				particulateMatter2p5_color = "verypoor";
-				particulateMatter2p5_bgcolor = "verypoor_bg";
-			}
-			else
-			{
-				particulateMatter2p5_category = "Severe";
-				particulateMatter2p5_color = "severe";
-				particulateMatter2p5_bgcolor = "severe_bg";
-			}
-
-			if (particulateMatter10 < 50)
-			{
-				particulateMatter10_category = "Good";
-				particulateMatter10_color = "good";
-				particulateMatter10_bgcolor = "good_bg";
-			}
-			else if (particulateMatter10 < 100)
-			{
-				particulateMatter10_category = "Satisfactory";
-				particulateMatter10_color = "satisfactory";
-				particulateMatter10_bgcolor = "satisfactory_bg";
-			}
-			else if (particulateMatter10 < 250)
-			{
-				particulateMatter10_category = "Moderate";
-				particulateMatter10_color = "moderate";
-				particulateMatter10_bgcolor = "moderate_bg";
-			}
-			else if (particulateMatter10 < 350)
-			{
-				particulateMatter10_category = "Poor";
-				particulateMatter10_color = "poor";
-				particulateMatter10_bgcolor = "poor_bg";
-			}
-			else if (particulateMatter10 < 430)
-			{
-				particulateMatter10_category = "Very Poor";
-				particulateMatter10_color = "verypoor";
-				particulateMatter10_bgcolor = "verypoor_bg";
-			}
-			else
-			{
-				particulateMatter10_category = "Severe";
-				particulateMatter10_color = "severe";
-				particulateMatter10_bgcolor = "severe_bg";
+				airQualityViewsOutdoor = GetAirQualityView(newAirQualityCollectionOutdoor);
+				lastUpdatedDateOutdoor = newAirQualityCollectionOutdoor.Documents[0].Fields.CreatedDate.TimestampValue.ToLocalTime().ToString("dd-MM-yyyy hh:mm:ss tt");
 			}
 
 			await InvokeAsync(StateHasChanged);
 		}
+		else if (state.ToString() == "indoor")
+		{
+			AirQualityCollection newAirQualityCollectionIndoor = await airQualityService.GetAirQualityDataAsync(1, "indoor");
+
+			if (newAirQualityCollectionIndoor?.Documents?.Count > 0)
+			{
+				airQualityViewsIndoor = GetAirQualityView(newAirQualityCollectionIndoor);
+				lastUpdatedDateIndoor = newAirQualityCollectionIndoor.Documents[0].Fields.CreatedDate.TimestampValue.ToLocalTime().ToString("dd-MM-yyyy hh:mm:ss tt");
+			}
+
+			await InvokeAsync(StateHasChanged);
+		}
+	}
+
+	private List<AirQualityView> GetAirQualityView(AirQualityCollection airQualityCollection)
+	{
+		List<AirQualityView> airQualityViews = new List<AirQualityView>();
+
+		double particulateMatter1p0 = airQualityCollection.Documents[0].Fields.ParticulateMatter1p0 != null ? airQualityCollection.Documents[0].Fields.ParticulateMatter1p0.DoubleValue : 0;
+		airQualityViews.Add(new AirQualityView()
+			{
+				Name = "PM 1.0",
+				Value = particulateMatter1p0,
+				Unit = "μg/m3",
+				Category = Categorize(PMType.PM1p0, particulateMatter1p0),
+				Slider = new Slider { Min = 0, Max = 360, SliderBg = "slider_bg_pm2p5" }
+			});
+
+		double particulateMatter2p5 = airQualityCollection.Documents[0].Fields.ParticulateMatter2p5 != null ? airQualityCollection.Documents[0].Fields.ParticulateMatter2p5.DoubleValue : 0;
+		airQualityViews.Add(new AirQualityView()
+			{
+				Name = "PM 2.5",
+				Value = particulateMatter2p5,
+				Unit = "μg/m3",
+				Category = Categorize(PMType.PM2p5, particulateMatter2p5),
+				Slider = new Slider { Min = 0, Max = 360, SliderBg = "slider_bg_pm2p5" }
+			});
+
+		double particulateMatter10 = airQualityCollection.Documents[0].Fields.ParticulateMatter10 != null ? airQualityCollection.Documents[0].Fields.ParticulateMatter10.DoubleValue : 0;
+		airQualityViews.Add(new AirQualityView()
+			{
+				Name = "PM 10",
+				Value = particulateMatter10,
+				Unit = "μg/m3",
+				Category = Categorize(PMType.PM10, particulateMatter10),
+				Slider = new Slider { Min = 0, Max = 600, SliderBg = "slider_bg_pm10" }
+			});
+
+		return airQualityViews;
+	}
+
+	private Category Categorize(PMType pmType, double pmValue)
+	{
+		Category category;
+
+		if (((pmType == PMType.PM1p0 || pmType == PMType.PM2p5) && pmValue < 30) || (pmType == PMType.PM10 && pmValue < 50))
+		{
+			category = new Category { Name = "Good", Color = "good", BgColor = "good_bg" };
+		}
+		else if (((pmType == PMType.PM1p0 || pmType == PMType.PM2p5) && pmValue < 60) || (pmType == PMType.PM10 && pmValue < 100))
+		{
+			category = new Category { Name = "Satisfactory", Color = "satisfactory", BgColor = "satisfactory_bg" };
+		}
+		else if (((pmType == PMType.PM1p0 || pmType == PMType.PM2p5) && pmValue < 90) || (pmType == PMType.PM10 && pmValue < 250))
+		{
+			category = new Category { Name = "Moderate", Color = "moderate", BgColor = "moderate_bg" };
+		}
+		else if (((pmType == PMType.PM1p0 || pmType == PMType.PM2p5) && pmValue < 120) || (pmType == PMType.PM10 && pmValue < 350))
+		{
+			category = new Category { Name = "Poor", Color = "poor", BgColor = "poor_bg" };
+		}
+		else if (((pmType == PMType.PM1p0 || pmType == PMType.PM2p5) && pmValue < 250) || (pmType == PMType.PM10 && pmValue < 430))
+		{
+			category = new Category { Name = "Very Poor", Color = "verypoor", BgColor = "verypoor_bg" };
+		}
+		else
+		{
+			category = new Category { Name = "Severe", Color = "severe", BgColor = "severe_bg" };
+		}
+
+		return category;
 	}
 }

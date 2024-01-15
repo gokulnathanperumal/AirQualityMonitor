@@ -29,9 +29,9 @@ public class AirQualityDocument
 
 public class Fields
 {
-    public ParticulateMatter1 ParticulateMatter1 { get; set; }
+    public ParticulateMatter1 ParticulateMatter1p0 { get; set; }
 	public ParticulateMatter2p5 ParticulateMatter2p5 { get; set; }
-	public ParticulateMatter4 ParticulateMatter4 { get; set; }
+	public ParticulateMatter4 ParticulateMatter4p0 { get; set; }
 	public ParticulateMatter10 ParticulateMatter10 { get; set; }
 	public Humidity Humidity { get; set; }
 	public Temperature Temperature { get; set; }
