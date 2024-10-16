@@ -1,5 +1,5 @@
 # <img src="https://github.com/user-attachments/assets/b2fddddf-a73c-4617-a5bf-3a34f40eaf00" width="5%" align="left">Air Quality Monitor
-Real-Time Air Quality Monitoring Application for Multiplatforms (Windows, macOS, Android, iOS, Tizen, Web). The application receives real-time data from the **[AirQualityStation](https://github.com/gokulnathanperumal/AirQualityStation)** project.
+A **Real-Time Air Quality Monitoring** Application for Multiplatforms (Windows, macOS, Android, iOS, Tizen, Web). The application receives real-time data from the **[AirQualityStation](https://github.com/gokulnathanperumal/AirQualityStation)** project.
 
 <p>Take charge of your environment with real-time pollution monitoring right at your fingertips. Our app empowers you to track crucial air quality indicators like PM 2.5 and PM 10, keeping you informed about the state of the air you breathe. Join us in making a difference – monitor pollution levels, raise awareness, and together, let's work towards a cleaner, healthier future for our hometown.</p>
 
